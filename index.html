@@ -645,7 +645,7 @@ header .search-bar::after {
     // Check if user is logged in
         const loggedInUserEmail = sessionStorage.getItem('loggedInUserEmail');
         if (!loggedInUserEmail) {
-            alert('Please log in to view categories.');
+            alert('Please log in to proceed.');
             window.location.href = 'login.html';
         }
         
@@ -678,3 +678,4 @@ document.addEventListener("DOMContentLoaded", function () {
   </script>
 </body>
 </html>
+
