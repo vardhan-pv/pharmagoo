@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Users List - Pharmacare</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif; /* Fixed typo: 'Montserrst' to 'Montserrat' */
+        }
+
+        body {
+            background: url("bg.png") no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+            padding: 30px 15px;
+            position: relative;
+        }
+
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url("images/bg.png") no-repeat center center fixed;
+            background-size: cover;
+            filter: blur(0.7px);
+            z-index: -1;
+        }
+
+        h2 {
+            text-align: center;
+            color: #2d7d32;
+            margin-bottom: 20px;
+            font-size: 2rem;
+        }
+
+        .table-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            overflow-x: auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 25px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background: #2d7d32;
+            color: #fff;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        tr:hover {
+            background: #f1f5f9;
+        }
+
+        button {
+            padding: 6px 12px;
+            background: #DC143C;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s, transform 0.3s;
+        }
+
+        button:hover {
+            background: #a50f2b;
+            transform: scale(1.05);
+        }
+
+        .logout-btn-container {
+            text-align: center;
+            margin-top: 25px;
+        }
+
+        .logout-btn-container button {
+            background: #2d7d32; /* Consistent with other pages' primary button color */
+            padding: 10px 20px;
+        }
+
+        .logout-btn-container button:hover {
+            background: #1a5e1a; /* Consistent hover color */
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            table th, table td {
+                padding: 10px 8px;
+                font-size: 14px;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            .table-container {
+                padding: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            table th, table td {
+                padding: 8px 6px;
+                font-size: 12px;
+            }
+
+            h2 {
+                font-size: 1.3rem;
+            }
+
+            button {
+                padding: 5px 10px;
+                font-size: 12px;
+            }
+
+            .table-container {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h2>Registered Users</h2>
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="usersTable"></tbody>
+        </table>
+        <div class="logout-btn-container">
+            <button id="logoutBtn">Logout Admin</button>
+        </div>
+    </div>
+
+    <script>
+        // Check if admin is logged in
+        if (sessionStorage.getItem('adminLoggedIn') !== 'true') {
+            alert("Access denied! Admin only.");
+            window.location.href = 'admin.html';
+        }
+
+        // Load users from localStorage
+        let users = JSON.parse(localStorage.getItem('users')) || [];
+
+        // Render user table
+        function renderTable() {
+            const tbody = document.getElementById('usersTable');
+            tbody.innerHTML = '';
+            if (users.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No users registered yet.</td></tr>';
+                return;
+            }
+            users.forEach((user, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${user.firstName || 'N/A'}</td>
+                    <td>${user.lastName || 'N/A'}</td>
+                    <td>${user.email}</td>
+                    <td>${user.phone || user.number || 'N/A'}</td> <!-- Handle both 'phone' and 'number' from signup -->
+                    <td><button onclick="deleteUser(${index})">Delete</button></td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Delete user function
+        function deleteUser(index) {
+            if (confirm("Are you sure you want to delete this user?")) {
+                users.splice(index, 1);
+                localStorage.setItem('users', JSON.stringify(users));
+                renderTable();
+                alert("User deleted successfully!");
+            }
+        }
+
+        // Logout functionality
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            sessionStorage.removeItem('adminLoggedIn');
+            alert('Admin logged out successfully!');
+            window.location.href = 'admin.html';
+        });
+
+        // Initial render
+        renderTable();
+    </script>
+</body>
+</html>

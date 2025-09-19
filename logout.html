@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Logout - Pharma Direct</title>
+  <style>
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: #f0f6fb;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      text-align: center;
+    }
+    .logout-box {
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    h2 {
+      color: #2d7d32;
+      margin-bottom: 15px;
+    }
+    p {
+      margin-bottom: 20px;
+      color: #555;
+    }
+    button {
+      background: #2d7d32;
+      color: #fff;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background: #1a5e1a;
+    }
+  </style>
+</head>
+<body>
+  <div class="logout-box">
+    <h2>Logging you out...</h2>
+    <p>Please wait while we redirect you.</p>
+    <button onclick="logout()">Logout Now</button>
+  </div>
+
+  <script>
+    function logout() {
+      // Clear session
+      localStorage.removeItem("loggedInUser");
+      // Optionally clear cart also
+      // localStorage.removeItem("cart");
+
+      // Redirect back to login
+      window.location.href = "login.html";
+    }
+
+    // Auto-logout after 2 seconds
+    setTimeout(logout, 2000);
+  </script>
+</body>
+</html>

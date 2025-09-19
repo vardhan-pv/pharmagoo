@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pharma Direct - Orders</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap">
+    <style>
+        /* Reset & basic styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        body {
+            background: #f0f6fb;
+            color: #333;
+            position: relative;
+        }
+
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url("bg.png") no-repeat center center fixed;
+            background-size: cover;
+            filter: blur(0.7px);
+            z-index: -1;
+        }
+
+        /* Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 50px;
+            background: #fff;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        header .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: #2d7d32;
+        }
+header .search-bar {
+    flex-grow: 0.8;
+    margin: 0 15px;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+header .search-bar input {
+    width: 100%;
+    padding: 12px 45px 12px 15px; /* space for icon */
+    border: 2px solid #16A34A; /* green border */
+    border-radius: 30px;
+    font-size: 1rem;
+    background: #f9fafb; /* light background */
+    outline: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+/* Focus effect */
+header .search-bar input:focus {
+    border-color: #166534; /* darker green */
+    background: #ffffff;
+    box-shadow: 0 0 8px rgba(22, 101, 52, 0.5);
+}
+
+/* Optional search icon */
+header .search-bar::after {
+    content: "🔍";
+    position: absolute;
+    right: 15px;
+    font-size: 1.2rem;
+    color: #16A34A; /* green icon */
+    pointer-events: none;
+}
+
+
+        .header-nav a {
+            margin: 0 15px;
+            text-decoration: none;
+            color: #2d7d32;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .header-nav a:hover {
+            color: #1a5e1a;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .cart {
+            position: relative;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -10px;
+            background: #2d7d32;
+            color: #fff;
+            font-size: 0.7rem;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
+        }
+
+        .profile {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .profile-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #2d7d32;
+            transition: transform 0.3s;
+        }
+
+        .profile-img:hover {
+            transform: scale(1.1);
+        }
+
+        .profile-dropdown {
+            position: absolute;
+            top: 50px;
+            right: 0;
+            background: #fff;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            display: none;
+            flex-direction: column;
+            animation: fadeIn 0.2s ease-in;
+        }
+
+        .profile:hover .profile-dropdown {
+            display: flex;
+        }
+
+        .profile-dropdown a {
+            padding: 12px 20px;
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .profile-dropdown a:hover {
+            background: #f0f6fb;
+            color: #2d7d32;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Orders Section */
+        .orders-section {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .orders-section h2 {
+            font-size: 1.8rem;
+            color: #2d7d32;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .orders-list {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .order-item {
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+            position: relative;
+        }
+
+        .order-item:last-child {
+            border-bottom: none;
+        }
+
+        .order-item h3 {
+            font-size: 1.3rem;
+            color: #2d7d32;
+            margin-bottom: 10px;
+        }
+
+        .order-item p {
+            font-size: 0.9rem;
+            color: #555;
+            margin: 5px 0;
+        }
+
+        .order-item .items-list {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+
+        .order-item .items-list p {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .order-item .status-pending {
+            color: #f39c12;
+            font-weight: 600;
+        }
+
+        .order-item .status-delivered {
+            color: #2d7d32;
+            font-weight: 600;
+        }
+
+        .order-item .delete-button {
+            background: #e74c3c;
+            color: #fff;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.3s;
+            position: absolute;
+            top: 15px;
+            right: 15px;
+        }
+
+        .order-item .delete-button:hover {
+            background: #c0392b;
+        }
+
+        .empty-orders {
+            text-align: center;
+            font-size: 1rem;
+            color: #555;
+            padding: 20px;
+        }
+
+        /* Footer */
+        footer {
+            background: #fff;
+            padding: 30px 20px;
+            text-align: center;
+            box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
+            margin-top: 40px;
+        }
+
+        footer a {
+            text-decoration: none;
+            color: #2d7d32;
+            font-weight: 500;
+            margin: 0 15px;
+            transition: color 0.2s;
+        }
+
+        footer a:hover {
+            color: #1a5e1a;
+            text-decoration: underline;
+        }
+
+        footer p {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                padding: 15px 20px;
+            }
+
+            header .search-bar {
+                margin: 10px 0;
+                width: 100%;
+            }
+
+            .header-nav,
+            .header-right {
+                margin-top: 10px;
+            }
+
+            .header-nav a {
+                margin: 0 10px;
+            }
+
+            .orders-list {
+                padding: 15px;
+            }
+
+            .order-item h3 {
+                font-size: 1.2rem;
+            }
+
+            .order-item .delete-button {
+                position: static;
+                margin-top: 10px;
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="logo">🩺 Pharmacygoo</div>
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Search for Products, Brands and More">
+        </div>
+        <div class="header-nav">
+            <a href="index.html">🏠 Home</a>
+            <a href="catogories.html">🗂️ Categories</a>
+            <a href="prescriptions.html">📋 Prescriptions</a>
+            <a href="products.html">📦 products</a>
+        </div>
+        <div class="header-right">
+            <div class="cart">
+                <a href="cart.html">🛒 <span class="cart-count">0</span></a>
+            </div>
+            <div class="profile">
+                <img src="profile.gif" alt="Profile" class="profile-img">
+                <div class="profile-dropdown">
+                    <a href="profile.html">My Account</a>
+                    <a href="orders.html">Orders</a>
+                    <a href="logout.html" id="logout">Logout</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Orders Section -->
+    <section class="orders-section">
+        <h2>Your Orders</h2>
+        <div class="orders-list" id="ordersList"></div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <a href="about.html">About Us</a>
+        <a href="contact.html">Contact</a>
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="terms.html">Terms of Service</a>
+        <p>&copy; 2025 Pharma Direct. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Check if user is logged in
+        const loggedInUserEmail = sessionStorage.getItem('loggedInUserEmail');
+        if (!loggedInUserEmail) {
+            alert('Please log in to view your orders.');
+            window.location.href = 'login.html';
+        }
+
+        // Load cart and orders from localStorage
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        const ordersListContainer = document.getElementById('ordersList');
+
+        // Sample product data (consistent with cart and payment pages)
+        const productData = {
+            1: { name: 'Vitamin Tablet', description: 'Vishwamed Multivitamin Tablet', price: 10.99, image: 'images/OPAC.jpeg' },
+            2: { name: 'Vitamin C', description: 'Daily immune support', price: 5.99, image: 'images/OPAC (1).jpeg' },
+            3: { name: 'Cough & Cold Relief', description: 'Keto', price: 8.99, image: 'images/OPAC (2).jpeg' },
+            4: { name: 'Other Medicine', description: 'DERMATOUCH Bye', price: 12.99, image: 'images/th.jpeg' }
+        };
+
+        // Render orders
+        function renderOrders() {
+            ordersListContainer.innerHTML = '';
+            const orders = JSON.parse(localStorage.getItem(`orders_${loggedInUserEmail}`)) || [];
+            if (orders.length === 0) {
+                ordersListContainer.innerHTML = '<p class="empty-orders">You have no orders.</p>';
+                return;
+            }
+
+            orders.forEach((order, index) => {
+                const orderItem = document.createElement('div');
+                orderItem.className = 'order-item';
+
+                // Calculate order total (in case of data inconsistencies)
+                let total = order.total || order.items.reduce((sum, item) => {
+                    const product = productData[item.id] || { price: 10.00 };
+                    return sum + product.price * item.quantity;
+                }, 0);
+
+                // Build items list
+                const itemsList = document.createElement('div');
+                itemsList.className = 'items-list';
+                order.items.forEach(item => {
+                    const product = productData[item.id] || { name: item.name, description: item.description, price: 10.00 };
+                    const itemElement = document.createElement('p');
+                    itemElement.textContent = `${product.name} (${item.quantity}) - $${(product.price * item.quantity).toFixed(2)}`;
+                    itemsList.appendChild(itemElement);
+                });
+
+                // Build delivery details (for COD orders)
+                let deliveryDetails = '';
+                if (order.paymentMethod === 'Cash on Delivery' && order.deliveryDetails) {
+                    deliveryDetails = `
+                        <p><strong>Delivery Details:</strong></p>
+                        <p>Name: ${order.deliveryDetails.name}</p>
+                        <p>Address: ${order.deliveryDetails.address}</p>
+                        <p>Phone: ${order.deliveryDetails.phone}</p>
+                    `;
+                }
+
+                // Set status class
+                const statusClass = order.status === 'Pending' ? 'status-pending' : 'status-delivered';
+
+                orderItem.innerHTML = `
+                    <h3>Order #${order.id}</h3>
+                    <p><strong>Date:</strong> ${order.date}</p>
+                    <p><strong>Payment Method:</strong> ${order.paymentMethod || 'Unknown'}</p>
+                    <p><strong>Status:</strong> <span class="${statusClass}">${order.status}</span></p>
+                    <p><strong>Items:</strong></p>
+                    ${itemsList.outerHTML}
+                    <p><strong>Total:</strong> $${total.toFixed(2)}</p>
+                    ${deliveryDetails}
+                    <button class="delete-button" onclick="deleteOrder(${index})">Delete Order</button>
+                `;
+                ordersListContainer.appendChild(orderItem);
+            });
+
+            updateCartCount();
+        }
+
+        // Delete order
+        function deleteOrder(index) {
+            if (confirm('Are you sure you want to delete this order?')) {
+                const orders = JSON.parse(localStorage.getItem(`orders_${loggedInUserEmail}`)) || [];
+                orders.splice(index, 1);
+                localStorage.setItem(`orders_${loggedInUserEmail}`, JSON.stringify(orders));
+                renderOrders();
+                alert('Order deleted successfully!');
+            }
+        }
+
+        // Update cart count in header
+        function updateCartCount() {
+            const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
+            document.querySelector('.cart-count').textContent = cartCount;
+        }
+
+        // Profile dropdown toggle for mobile
+        const profile = document.querySelector('.profile');
+        const dropdown = document.querySelector('.profile-dropdown');
+        profile.addEventListener('click', () => {
+            dropdown.style.display = dropdown.style.display === 'flex' ? 'none' : 'flex';
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!profile.contains(e.target)) {
+                dropdown.style.display = 'none';
+            }
+        });
+
+        // Logout functionality
+        document.getElementById('logout').addEventListener('click', () => {
+            sessionStorage.removeItem('loggedInUserEmail');
+            alert('Logged out successfully!');
+            window.location.href = 'login.html';
+        });
+
+   // Basic search functionality (redirect or filter on homepage)
+        document.getElementById('searchInput').addEventListener('input', function (e) {
+            const searchTerm = e.target.value.trim();
+            if (searchTerm) {
+                window.location.href = `products.html?search=${encodeURIComponent(searchTerm)}`;
+            }
+        });
+            
+
+document.addEventListener("DOMContentLoaded", function () {
+    const urlParams = new URLSearchParams(window.location.search);
+    const searchTerm = urlParams.get("search");
+
+    if (searchTerm) {
+        document.getElementById("searchInput").value = searchTerm; // keep term in box
+        const productCards = document.querySelectorAll('.product-card');
+
+        productCards.forEach(card => {
+            const name = card.querySelector('h3').textContent.toLowerCase();
+            const description = card.querySelector('p').textContent.toLowerCase();
+            card.style.display = 
+                name.includes(searchTerm.toLowerCase()) || 
+                description.includes(searchTerm.toLowerCase()) 
+                ? "block" : "none";
+        });
+    }
+});
+    </script>
+</body>
+</html>

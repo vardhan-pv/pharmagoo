@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pharma Direct - Products</title>
+  <style>
+    /* Reset & basic styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Montserrat', sans-serif;
+}
+
+body {
+    background: #f0f6fb;
+    color: #333;
+    position: relative;
+}
+
+body::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url("bg.png") no-repeat center center fixed;
+    background-size: cover;
+    filter: blur(0.7px);
+    z-index: -1;
+}
+
+/* Header */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 50px;
+    background: #fff;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+header .logo {
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: #2d7d32;
+}
+header .search-bar {
+    flex-grow: 0.8;
+    margin: 0 15px;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+header .search-bar input {
+    width: 100%;
+    padding: 12px 45px 12px 15px; /* space for icon */
+    border: 2px solid #16A34A; /* green border */
+    border-radius: 30px;
+    font-size: 1rem;
+    background: #f9fafb; /* light background */
+    outline: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+/* Focus effect */
+header .search-bar input:focus {
+    border-color: #166534; /* darker green */
+    background: #ffffff;
+    box-shadow: 0 0 8px rgba(22, 101, 52, 0.5);
+}
+
+/* Optional search icon */
+header .search-bar::after {
+    content: "🔍";
+    position: absolute;
+    right: 15px;
+    font-size: 1.2rem;
+    color: #16A34A; /* green icon */
+    pointer-events: none;
+}
+
+
+.header-nav a {
+    margin: 0 15px;
+    text-decoration: none;
+    color: #2d7d32;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.header-nav a:hover {
+    color: #1a5e1a;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.cart {
+    position: relative;
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+.cart-count {
+    position: absolute;
+    top: -8px;
+    right: -10px;
+    background: #2d7d32;
+    color: #fff;
+    font-size: 0.7rem;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+}
+
+.profile {
+    position: relative;
+    cursor: pointer;
+}
+
+.profile-img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #2d7d32;
+    transition: transform 0.3s;
+}
+
+.profile-img:hover {
+    transform: scale(1.1);
+}
+
+.profile-dropdown {
+    position: absolute;
+    top: 50px;
+    right: 0;
+    background: #fff;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+    display: none;
+    flex-direction: column;
+    animation: fadeIn 0.2s ease-in;
+}
+
+.profile:hover .profile-dropdown {
+    display: flex;
+}
+
+.profile-dropdown a {
+    padding: 12px 20px;
+    text-decoration: none;
+    color: #333;
+    font-weight: 500;
+    transition: background 0.2s, color 0.2s;
+}
+
+.profile-dropdown a:hover {
+    background: #f0f6fb;
+    color: #2d7d32;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Products Section */
+.products-section {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.products-section h1 {
+    font-size: 1.8rem;
+    color: #2d7d32;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+}
+
+.product-card {
+    background: #fff;
+    padding: 15px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+}
+
+.product-card img {
+    width: 100%;
+    height: 160px;
+    object-fit: contain;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    transition: transform 0.3s;
+}
+
+.product-card:hover img {
+    transform: scale(1.05);
+}
+
+.product-card h3 {
+    font-size: 1.1rem;
+    margin: 10px 0;
+    color: #2d7d32;
+    font-weight: 600;
+}
+
+.price {
+    font-size: 1rem;
+    color: #1E3A8A;
+    font-weight: bold;
+    margin: 5px 0;
+}
+
+.reviews {
+    color: #f39c12;
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+}
+
+button {
+    background: #2d7d32;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s;
+    font-weight: 500;
+}
+
+button:hover {
+    background: #1a5e1a;
+}
+
+/* Footer */
+footer {
+    background: #fff;
+    padding: 30px 20px;
+    text-align: center;
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
+    margin-top: 40px;
+}
+
+footer a {
+    text-decoration: none;
+    color: #2d7d32;
+    font-weight: 500;
+    margin: 0 15px;
+    transition: color 0.2s;
+}
+
+footer a:hover {
+    color: #1a5e1a;
+    text-decoration: underline;
+}
+
+footer p {
+    margin-top: 10px;
+    font-size: 0.9rem;
+    color: #555;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    header {
+        flex-direction: column;
+        padding: 15px 20px;
+    }
+
+    header .search-bar {
+        margin: 10px 0;
+        width: 100%;
+    }
+
+    .header-nav,
+    .header-right {
+        margin-top: 10px;
+    }
+
+    .header-nav a {
+        margin: 0 10px;
+    }
+
+    .products-section h1 {
+        font-size: 1.5rem;
+    }
+}
+</style>
+</head>
+<body>
+<!-- Header -->
+  <header>
+    <div class="logo">🩺 Pharmacygoo</div>
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder=" Search for Products, Brands and More">
+    </div>
+    <div class="header-nav">
+      <a href="index.html">🏠 Home</a>
+      <a href="catogories.html">🗂️ Categories</a>
+      <a href="prescriptions.html">📋 Prescriptions</a>
+      <a href="products.html">📦 products</a>
+    </div>
+    <div class="header-right">
+      <div class="cart">
+        <a href="cart.html">🛒 <span class="cart-count">0</span></a>
+      </div>
+      <div class="profile">
+        <img src="profile.gif" alt="Profile" class="profile-img">
+        <div class="profile-dropdown">
+          <a href="profile.html">My Account</a>
+          <a href="orders.html">Orders</a>
+          <a href="logout.html">Logout</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+
+  <div class="product-grid">
+
+    <!-- 1 to 8 -->
+<div class="product-card"><img src="OPAC (2).jpeg" alt="Cough Syrup"><h3>Cough Syrup</h3><div class="price">₹120</div><div class="reviews">⭐⭐⭐⭐ (120 reviews)</div><button onclick="addToCart('p1','Cough Syrup',120)">Add to Cart</button></div>
+<div class="product-card"><img src="OPAC (1).jpeg" alt="Vitamin C Tablets"><h3>Vitamin C Tablets</h3><div class="price">₹250</div><div class="reviews">⭐⭐⭐⭐⭐ (200 reviews)</div><button onclick="addToCart('p2','Vitamin C Tablets',250)">Add to Cart</button></div>
+<div class="product-card"><img src="OPAC.jpeg" alt="Pain Relief Balm"><h3>Pain Relief Balm</h3><div class="price">₹90</div><div class="reviews">⭐⭐⭐⭐ (80 reviews)</div><button onclick="addToCart('p3','Pain Relief Balm',90)">Add to Cart</button></div>
+<div class="product-card"><img src="th.jpeg" alt="Moisturizing Cream"><h3>Moisturizing Cream</h3><div class="price">₹350</div><div class="reviews">⭐⭐⭐⭐⭐ (150 reviews)</div><button onclick="addToCart('p4','Moisturizing Cream',350)">Add to Cart</button></div>
+<div class="product-card"><img src="th (1).jpeg" alt="Shampoo"><h3>Herbal Shampoo</h3><div class="price">₹180</div><div class="reviews">⭐⭐⭐⭐ (95 reviews)</div><button onclick="addToCart('p5','Herbal Shampoo',180)">Add to Cart</button></div>
+<div class="product-card"><img src="th (2).jpeg" alt="Baby Lotion"><h3>Baby Lotion</h3><div class="price">₹220</div><div class="reviews">⭐⭐⭐⭐⭐ (210 reviews)</div><button onclick="addToCart('p6','Baby Lotion',220)">Add to Cart</button></div>
+<div class="product-card"><img src="th (3).jpeg" alt="Ayurvedic Tonic"><h3>Ayurvedic Tonic</h3><div class="price">₹400</div><div class="reviews">⭐⭐⭐⭐ (70 reviews)</div><button onclick="addToCart('p7','Ayurvedic Tonic',400)">Add to Cart</button></div>
+<div class="product-card"><img src="OPAC (6).jpeg" alt="Thermometer"><h3>Digital Thermometer</h3><div class="price">₹300</div><div class="reviews">⭐⭐⭐⭐⭐ (320 reviews)</div><button onclick="addToCart('p8','Digital Thermometer',300)">Add to Cart</button></div>
+
+<!-- 9 to 16 -->
+<div class="product-card"><img src="OPAC (2).jpeg" alt="Cough Syrup Plus"><h3>Cough Syrup Plus</h3><div class="price">₹140</div><div class="reviews">⭐⭐⭐⭐ (65 reviews)</div><button onclick="addToCart('p9','Cough Syrup Plus',140)">Add to Cart</button></div>
+<div class="product-card"><img src="OPAC (1).jpeg" alt="Vitamin D Capsules"><h3>Vitamin D Capsules</h3><div class="price">₹280</div><div class="reviews">⭐⭐⭐⭐⭐ (175 reviews)</div><button onclick="addToCart('p10','Vitamin D Capsules',280)">Add to Cart</button></div>
+<div class="product-card"><img src="OPAC.jpeg" alt="Pain Relief Spray"><h3>Pain Relief Spray</h3><div class="price">₹150</div><div class="reviews">⭐⭐⭐⭐ (90 reviews)</div><button onclick="addToCart('p11','Pain Relief Spray',150)">Add to Cart</button></div>
+<div class="product-card"><img src="th.jpeg" alt="Aloe Vera Gel"><h3>Aloe Vera Gel</h3><div class="price">₹200</div><div class="reviews">⭐⭐⭐⭐⭐ (220 reviews)</div><button onclick="addToCart('p12','Aloe Vera Gel',200)">Add to Cart</button></div>
+<div class="product-card"><img src="th (1).jpeg" alt="Conditioner"><h3>Natural Conditioner</h3><div class="price">₹190</div><div class="reviews">⭐⭐⭐⭐ (110 reviews)</div><button onclick="addToCart('p13','Natural Conditioner',190)">Add to Cart</button></div>
+<div class="product-card"><img src="th (2).jpeg" alt="Baby Shampoo"><h3>Baby Shampoo</h3><div class="price">₹240</div><div class="reviews">⭐⭐⭐⭐⭐ (250 reviews)</div><button onclick="addToCart('p14','Baby Shampoo',240)">Add to Cart</button></div>
+<div class="product-card"><img src="th (3).jpeg" alt="Herbal Tablets"><h3>Herbal Tablets</h3><div class="price">₹300</div><div class="reviews">⭐⭐⭐⭐ (130 reviews)</div><button onclick="addToCart('p15','Herbal Tablets',300)">Add to Cart</button></div>
+<div class="product-card"><img src="OPAC (6).jpeg" alt="Blood Pressure Monitor"><h3>Blood Pressure Monitor</h3><div class="price">₹1200</div><div class="reviews">⭐⭐⭐⭐⭐ (410 reviews)</div><button onclick="addToCart('p16','Blood Pressure Monitor',1200)">Add to Cart</button></div>
+
+<!-- 17 to 24 -->
+<div class="product-card"><img src="OPAC (2).jpeg" alt="Cold Tablets"><h3>Cold Tablets</h3><div class="price">₹100</div><div class="reviews">⭐⭐⭐⭐ (150 reviews)</div><button onclick="addToCart('p17','Cold Tablets',100)">Add to Cart</button></div>
+<div class="product-card"><img src="OPAC (1).jpeg" alt="Multivitamins"><h3>Multivitamins</h3><div class="price">₹320</div><div class="reviews">⭐⭐⭐⭐⭐ (300 reviews)</div><button onclick="addToCart('p18','Multivitamins',320)">Add to Cart</button></div>
+<div class="product-card"><img src="OPAC.jpeg" alt="Joint Pain Cream"><h3>Joint Pain Cream</h3><div class="price">₹210</div><div class="reviews">⭐⭐⭐⭐ (140 reviews)</div><button onclick="addToCart('p19','Joint Pain Cream',210)">Add to Cart</button></div>
+<div class="product-card"><img src="th.jpeg" alt="Sunscreen Lotion"><h3>Sunscreen Lotion</h3><div class="price">₹450</div><div class="reviews">⭐⭐⭐⭐⭐ (180 reviews)</div><button onclick="addToCart('p20','Sunscreen Lotion',450)">Add to Cart</button></div>
+<div class="product-card"><img src="th (1).jpeg" alt="Hair Oil"><h3>Hair Oil</h3><div class="price">₹160</div><div class="reviews">⭐⭐⭐⭐ (200 reviews)</div><button onclick="addToCart('p21','Hair Oil',160)">Add to Cart</button></div>
+<div class="product-card"><img src="th (2).jpeg" alt="Baby Soap"><h3>Baby Soap</h3><div class="price">₹80</div><div class="reviews">⭐⭐⭐⭐⭐ (270 reviews)</div><button onclick="addToCart('p22','Baby Soap',80)">Add to Cart</button></div>
+<div class="product-card"><img src="th (3).jpeg" alt="Chyawanprash"><h3>Chyawanprash</h3><div class="price">₹350</div><div class="reviews">⭐⭐⭐⭐ (160 reviews)</div><button onclick="addToCart('p23','Chyawanprash',350)">Add to Cart</button></div>
+<div class="product-card"><img src="OPAC (6).jpeg" alt="Glucometer"><h3>Glucometer</h3><div class="price">₹900</div><div class="reviews">⭐⭐⭐⭐⭐ (360 reviews)</div><button onclick="addToCart('p24','Glucometer',900)">Add to Cart</button></div>
+
+<!-- 25 to 30 -->
+<div class="product-card"><img src="OPAC (2).jpeg" alt="Cough Drops"><h3>Cough Drops</h3><div class="price">₹60</div><div class="reviews">⭐⭐⭐⭐ (100 reviews)</div><button onclick="addToCart('p25','Cough Drops',60)">Add to Cart</button></div>
+<div class="product-card"><img src="OPAC (1).jpeg" alt="Zinc Supplements"><h3>Zinc Supplements</h3><div class="price">₹270</div><div class="reviews">⭐⭐⭐⭐⭐ (190 reviews)</div><button onclick="addToCart('p26','Zinc Supplements',270)">Add to Cart</button></div>
+<div class="product-card"><img src="OPAC.jpeg" alt="Back Pain Patch"><h3>Back Pain Patch</h3><div class="price">₹130</div><div class="reviews">⭐⭐⭐⭐ (75 reviews)</div><button onclick="addToCart('p27','Back Pain Patch',130)">Add to Cart</button></div>
+<div class="product-card"><img src="th.jpeg" alt="Face Wash"><h3>Face Wash</h3><div class="price">₹210</div><div class="reviews">⭐⭐⭐⭐⭐ (300 reviews)</div><button onclick="addToCart('p28','Face Wash',210)">Add to Cart</button></div>
+<div class="product-card"><img src="th (1).jpeg" alt="Body Wash"><h3>Body Wash</h3><div class="price">₹230</div><div class="reviews">⭐⭐⭐⭐ (180 reviews)</div><button onclick="addToCart('p29','Body Wash',230)">Add to Cart</button></div>
+<div class="product-card"><img src="th (2).jpeg" alt="Baby Powder"><h3>Baby Powder</h3><div class="price">₹150</div><div class="reviews">⭐⭐⭐⭐⭐ (220 reviews)</div><button onclick="addToCart('p30','Baby Powder',150)">Add to Cart</button></div>
+
+  </div>
+<footer>
+        <a href="about.html">About Us</a>
+        <a href="contact.html">Contact</a>
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="terms.html">Terms of Service</a>
+        <p>&copy; 2025 Pharma Direct. All rights reserved.</p>
+    </footer>
+  <script>
+  // Initialize cart from localStorage
+  let cart = JSON.parse(localStorage.getItem('cart')) || [];
+  updateCartCount();
+
+  // Add to cart function
+  function addToCart(id, name, price) {
+    const existingItem = cart.find(item => item.id === id);
+    if (existingItem) {
+      existingItem.quantity += 1;
+    } else {
+      cart.push({ id, name, price, quantity: 1 });
+    }
+    localStorage.setItem('cart', JSON.stringify(cart));
+    updateCartCount();
+    alert(`${name} added to cart!`);
+  }
+
+  // Update cart count display
+  function updateCartCount() {
+    const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
+    document.querySelector('.cart-count').textContent = cartCount;
+  }
+
+  // Profile dropdown toggle
+  const profile = document.querySelector('.profile');
+  const dropdown = document.querySelector('.profile-dropdown');
+  profile.addEventListener('click', (e) => {
+    e.stopPropagation();
+    dropdown.style.display = dropdown.style.display === 'flex' ? 'none' : 'flex';
+  });
+
+  // Close dropdown when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!profile.contains(e.target)) {
+      dropdown.style.display = 'none';
+    }
+  });
+
+  // Basic search functionality
+  document.getElementById('searchInput').addEventListener('input', function (e) {
+    const searchTerm = e.target.value.toLowerCase();
+    const productCards = document.querySelectorAll('.product-card');
+    productCards.forEach(card => {
+      const name = card.querySelector('h3').textContent.toLowerCase();
+      card.style.display = name.includes(searchTerm) ? 'block' : 'none';
+    });
+  });
+        // Basic search functionality (redirect or filter on productpage)
+        document.getElementById('searchInput').addEventListener('input', function (e) {
+            const searchTerm = e.target.value.trim();
+            if (searchTerm) {
+                window.location.href = `products.html?search=${encodeURIComponent(searchTerm)}`;
+            }
+        });
+            
+document.addEventListener("DOMContentLoaded", function () {
+    const urlParams = new URLSearchParams(window.location.search);
+    const searchTerm = urlParams.get("search");
+
+    if (searchTerm) {
+        document.getElementById("searchInput").value = searchTerm; // keep term in box
+        const productCards = document.querySelectorAll('.product-card');
+
+        productCards.forEach(card => {
+            const name = card.querySelector('h3').textContent.toLowerCase();
+            const description = card.querySelector('p').textContent.toLowerCase();
+            card.style.display = 
+                name.includes(searchTerm.toLowerCase()) || 
+                description.includes(searchTerm.toLowerCase()) 
+                ? "block" : "none";
+        });
+    }
+});
+</script>
+
+</body>
+</html>
