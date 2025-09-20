@@ -378,151 +378,156 @@ header .search-bar::after {
         <p>&copy; 2025 Pharma Direct. All rights reserved.</p>
     </footer>
 
-    <script>
-        // Check if user is logged in
-        const loggedInUserEmail = sessionStorage.getItem('loggedInUserEmail');
-        if (!loggedInUserEmail) {
-            alert('Please log in to view your orders.');
-            window.location.href = 'login.html';
+   <script>
+document.addEventListener("DOMContentLoaded", function () {
+    // Check if user is logged in
+    const loggedInUserEmail = sessionStorage.getItem('loggedInUserEmail');
+    if (!loggedInUserEmail) {
+        alert('Please log in to view your orders.');
+        window.location.href = 'login.html';
+        return;
+    }
+
+    // Load cart and orders from localStorage
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const ordersListContainer = document.getElementById('ordersList');
+
+    // Sample product data
+    const productData = {
+        1: { name: 'Vitamin Tablet', description: 'Vishwamed Multivitamin Tablet', price: 10.99, image: 'images/OPAC.jpeg' },
+        2: { name: 'Vitamin C', description: 'Daily immune support', price: 5.99, image: 'images/OPAC (1).jpeg' },
+        3: { name: 'Cough & Cold Relief', description: 'Keto', price: 8.99, image: 'images/OPAC (2).jpeg' },
+        4: { name: 'Other Medicine', description: 'DERMATOUCH Bye', price: 12.99, image: 'images/th.jpeg' }
+    };
+
+    // Render orders
+    function renderOrders() {
+        if (!ordersListContainer) return;
+        ordersListContainer.innerHTML = '';
+
+        const orders = JSON.parse(localStorage.getItem(`orders_${loggedInUserEmail}`)) || [];
+        if (orders.length === 0) {
+            ordersListContainer.innerHTML = '<p class="empty-orders">You have no orders.</p>';
+            return;
         }
 
-        // Load cart and orders from localStorage
-        let cart = JSON.parse(localStorage.getItem('cart')) || [];
-        const ordersListContainer = document.getElementById('ordersList');
+        orders.forEach((order, index) => {
+            const orderItem = document.createElement('div');
+            orderItem.className = 'order-item';
 
-        // Sample product data (consistent with cart and payment pages)
-        const productData = {
-            1: { name: 'Vitamin Tablet', description: 'Vishwamed Multivitamin Tablet', price: 10.99, image: 'images/OPAC.jpeg' },
-            2: { name: 'Vitamin C', description: 'Daily immune support', price: 5.99, image: 'images/OPAC (1).jpeg' },
-            3: { name: 'Cough & Cold Relief', description: 'Keto', price: 8.99, image: 'images/OPAC (2).jpeg' },
-            4: { name: 'Other Medicine', description: 'DERMATOUCH Bye', price: 12.99, image: 'images/th.jpeg' }
-        };
+            // Calculate total
+            const total = order.total || order.items.reduce((sum, item) => {
+                const product = productData[item.id] || { price: 10.00 };
+                return sum + product.price * item.quantity;
+            }, 0);
 
-        // Render orders
-        function renderOrders() {
-            ordersListContainer.innerHTML = '';
-            const orders = JSON.parse(localStorage.getItem(`orders_${loggedInUserEmail}`)) || [];
-            if (orders.length === 0) {
-                ordersListContainer.innerHTML = '<p class="empty-orders">You have no orders.</p>';
-                return;
-            }
-
-            orders.forEach((order, index) => {
-                const orderItem = document.createElement('div');
-                orderItem.className = 'order-item';
-
-                // Calculate order total (in case of data inconsistencies)
-                let total = order.total || order.items.reduce((sum, item) => {
-                    const product = productData[item.id] || { price: 10.00 };
-                    return sum + product.price * item.quantity;
-                }, 0);
-
-                // Build items list
-                const itemsList = document.createElement('div');
-                itemsList.className = 'items-list';
-                order.items.forEach(item => {
-                    const product = productData[item.id] || { name: item.name, description: item.description, price: 10.00 };
-                    const itemElement = document.createElement('p');
-                    itemElement.textContent = `${product.name} (${item.quantity}) - $${(product.price * item.quantity).toFixed(2)}`;
-                    itemsList.appendChild(itemElement);
-                });
-
-                // Build delivery details (for COD orders)
-                let deliveryDetails = '';
-                if (order.paymentMethod === 'Cash on Delivery' && order.deliveryDetails) {
-                    deliveryDetails = `
-                        <p><strong>Delivery Details:</strong></p>
-                        <p>Name: ${order.deliveryDetails.name}</p>
-                        <p>Address: ${order.deliveryDetails.address}</p>
-                        <p>Phone: ${order.deliveryDetails.phone}</p>
-                    `;
-                }
-
-                // Set status class
-                const statusClass = order.status === 'Pending' ? 'status-pending' : 'status-delivered';
-
-                orderItem.innerHTML = `
-                    <h3>Order #${order.id}</h3>
-                    <p><strong>Date:</strong> ${order.date}</p>
-                    <p><strong>Payment Method:</strong> ${order.paymentMethod || 'Unknown'}</p>
-                    <p><strong>Status:</strong> <span class="${statusClass}">${order.status}</span></p>
-                    <p><strong>Items:</strong></p>
-                    ${itemsList.outerHTML}
-                    <p><strong>Total:</strong> $${total.toFixed(2)}</p>
-                    ${deliveryDetails}
-                    <button class="delete-button" onclick="deleteOrder(${index})">Delete Order</button>
-                `;
-                ordersListContainer.appendChild(orderItem);
+            // Build items list
+            const itemsList = document.createElement('div');
+            itemsList.className = 'items-list';
+            order.items.forEach(item => {
+                const product = productData[item.id] || { name: item.name, description: item.description, price: 10.00 };
+                const itemElement = document.createElement('p');
+                itemElement.textContent = `${product.name} (${item.quantity}) - $${(product.price * item.quantity).toFixed(2)}`;
+                itemsList.appendChild(itemElement);
             });
 
-            updateCartCount();
-        }
-
-        // Delete order
-        function deleteOrder(index) {
-            if (confirm('Are you sure you want to delete this order?')) {
-                const orders = JSON.parse(localStorage.getItem(`orders_${loggedInUserEmail}`)) || [];
-                orders.splice(index, 1);
-                localStorage.setItem(`orders_${loggedInUserEmail}`, JSON.stringify(orders));
-                renderOrders();
-                alert('Order deleted successfully!');
+            // Delivery details
+            let deliveryDetails = '';
+            if (order.paymentMethod === 'Cash on Delivery' && order.deliveryDetails) {
+                deliveryDetails = `
+                    <p><strong>Delivery Details:</strong></p>
+                    <p>Name: ${order.deliveryDetails.name}</p>
+                    <p>Address: ${order.deliveryDetails.address}</p>
+                    <p>Phone: ${order.deliveryDetails.phone}</p>
+                `;
             }
-        }
 
-        // Update cart count in header
-        function updateCartCount() {
-            const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
-            document.querySelector('.cart-count').textContent = cartCount;
-        }
+            const statusClass = order.status === 'Pending' ? 'status-pending' : 'status-delivered';
 
-        // Profile dropdown toggle for mobile
-        const profile = document.querySelector('.profile');
-        const dropdown = document.querySelector('.profile-dropdown');
+            orderItem.innerHTML = `
+                <h3>Order #${order.id}</h3>
+                <p><strong>Date:</strong> ${order.date}</p>
+                <p><strong>Payment Method:</strong> ${order.paymentMethod || 'Unknown'}</p>
+                <p><strong>Status:</strong> <span class="${statusClass}">${order.status}</span></p>
+                <p><strong>Items:</strong></p>
+                ${itemsList.outerHTML}
+                <p><strong>Total:</strong> $${total.toFixed(2)}</p>
+                ${deliveryDetails}
+                <button class="delete-button" onclick="deleteOrder(${index})">Delete Order</button>
+            `;
+            ordersListContainer.appendChild(orderItem);
+        });
+
+        updateCartCount();
+    }
+
+    // Delete order
+    window.deleteOrder = function (index) {
+        if (confirm('Are you sure you want to delete this order?')) {
+            const orders = JSON.parse(localStorage.getItem(`orders_${loggedInUserEmail}`)) || [];
+            orders.splice(index, 1);
+            localStorage.setItem(`orders_${loggedInUserEmail}`, JSON.stringify(orders));
+            renderOrders();
+            alert('Order deleted successfully!');
+        }
+    }
+
+    // Update cart count
+    function updateCartCount() {
+        const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
+        const cartCountEl = document.querySelector('.cart-count');
+        if (cartCountEl) cartCountEl.textContent = cartCount;
+    }
+
+    // Profile dropdown
+    const profile = document.querySelector('.profile');
+    const dropdown = document.querySelector('.profile-dropdown');
+    if (profile && dropdown) {
         profile.addEventListener('click', () => {
             dropdown.style.display = dropdown.style.display === 'flex' ? 'none' : 'flex';
         });
-
-        // Close dropdown when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!profile.contains(e.target)) {
-                dropdown.style.display = 'none';
-            }
+        document.addEventListener('click', e => {
+            if (!profile.contains(e.target)) dropdown.style.display = 'none';
         });
+    }
 
-        // Logout functionality
-        document.getElementById('logout').addEventListener('click', () => {
+    // Logout
+    const logoutBtn = document.getElementById('logout');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => {
             sessionStorage.removeItem('loggedInUserEmail');
             alert('Logged out successfully!');
             window.location.href = 'login.html';
         });
+    }
 
-   // Basic search functionality (redirect or filter on homepage)
-        document.getElementById('searchInput').addEventListener('input', function (e) {
+    // Search
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        searchInput.addEventListener('input', e => {
             const searchTerm = e.target.value.trim();
-            if (searchTerm) {
-                window.location.href = `products.html?search=${encodeURIComponent(searchTerm)}`;
-            }
+            if (searchTerm) window.location.href = `products.html?search=${encodeURIComponent(searchTerm)}`;
         });
-            
+    }
 
-document.addEventListener("DOMContentLoaded", function () {
+    // Filter products if search param exists
     const urlParams = new URLSearchParams(window.location.search);
     const searchTerm = urlParams.get("search");
-
-    if (searchTerm) {
-        document.getElementById("searchInput").value = searchTerm; // keep term in box
+    if (searchTerm && searchInput) {
+        searchInput.value = searchTerm;
         const productCards = document.querySelectorAll('.product-card');
-
         productCards.forEach(card => {
             const name = card.querySelector('h3').textContent.toLowerCase();
             const description = card.querySelector('p').textContent.toLowerCase();
-            card.style.display = 
-                name.includes(searchTerm.toLowerCase()) || 
-                description.includes(searchTerm.toLowerCase()) 
-                ? "block" : "none";
+            card.style.display = name.includes(searchTerm.toLowerCase()) || description.includes(searchTerm.toLowerCase()) ? 'block' : 'none';
         });
     }
+
+    // Initial render
+    renderOrders();
 });
-    </script>
+</script>
+
 </body>
+
 </html>
