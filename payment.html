@@ -394,61 +394,72 @@ header .search-bar::after {
         <p>&copy; 2025 Pharma Direct. All rights reserved.</p>
     </footer>
 
-    <script>
-        // Check if user is logged in
-        const loggedInUserEmail = sessionStorage.getItem('loggedInUserEmail');
-        if (!loggedInUserEmail) {
-            alert('Please log in to proceed with payment.');
-            window.location.href = 'login.html';
+  <script>
+document.addEventListener("DOMContentLoaded", function () {
+    // Check if user is logged in
+    const loggedInUserEmail = sessionStorage.getItem('loggedInUserEmail');
+    if (!loggedInUserEmail) {
+        alert('Please log in to proceed with payment.');
+        window.location.href = 'login.html';
+        return;
+    }
+
+    // Load cart from localStorage
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const orderItemsContainer = document.getElementById('orderItems');
+    const orderSummaryContainer = document.getElementById('orderSummary');
+
+    // Sample product data
+    const productData = {
+        1: { name: 'Vitamin Tablet', description: 'Vishwamed Multivitamin Tablet', price: 10.99, image: 'images/OPAC.jpeg' },
+        2: { name: 'Vitamin C', description: 'Daily immune support', price: 5.99, image: 'images/OPAC (1).jpeg' },
+        3: { name: 'Cough & Cold Relief', description: 'Keto', price: 8.99, image: 'images/OPAC (2).jpeg' },
+        4: { name: 'Other Medicine', description: 'DERMATOUCH Bye', price: 12.99, image: 'images/th.jpeg' }
+    };
+
+    // Render order summary
+    function renderOrderSummary() {
+        if (!orderItemsContainer) return;
+
+        orderItemsContainer.innerHTML = '';
+        if (cart.length === 0) {
+            if (orderSummaryContainer) orderSummaryContainer.innerHTML = '<p class="empty-cart">Your cart is empty.</p>';
+            return;
         }
 
-        // Load cart from localStorage
-        let cart = JSON.parse(localStorage.getItem('cart')) || [];
-        const orderItemsContainer = document.getElementById('orderItems');
-        const orderSummaryContainer = document.getElementById('orderSummary');
+        let total = 0;
+        cart.forEach(item => {
+            const product = productData[item.id] || { name: item.name, description: item.description, price: 10.00 };
+            const itemTotal = product.price * item.quantity;
+            total += itemTotal;
 
-        // Sample product data (consistent with cart page)
-        const productData = {
-            1: { name: 'Vitamin Tablet', description: 'Vishwamed Multivitamin Tablet', price: 10.99, image: 'images/OPAC.jpeg' },
-            2: { name: 'Vitamin C', description: 'Daily immune support', price: 5.99, image: 'images/OPAC (1).jpeg' },
-            3: { name: 'Cough & Cold Relief', description: 'Keto', price: 8.99, image: 'images/OPAC (2).jpeg' },
-            4: { name: 'Other Medicine', description: 'DERMATOUCH Bye', price: 12.99, image: 'images/th.jpeg' }
-        };
+            const itemElement = document.createElement('p');
+            itemElement.textContent = `${product.name} (${item.quantity}) - $${itemTotal.toFixed(2)}`;
+            orderItemsContainer.appendChild(itemElement);
+        });
 
-        // Render order summary
-        function renderOrderSummary() {
-            orderItemsContainer.innerHTML = '';
-            if (cart.length === 0) {
-                orderSummaryContainer.innerHTML = '<p class="empty-cart">Your cart is empty.</p>';
-                return;
-            }
+        const totalElement = document.createElement('p');
+        totalElement.className = 'total';
+        totalElement.textContent = `Total: $${total.toFixed(2)}`;
+        orderItemsContainer.appendChild(totalElement);
 
-            let total = 0;
-            cart.forEach(item => {
-                const product = productData[item.id] || { name: item.name, description: item.description, price: 10.00 };
-                const itemTotal = product.price * item.quantity;
-                total += itemTotal;
+        updateCartCount();
+    }
 
-                const itemElement = document.createElement('p');
-                itemElement.textContent = `${product.name} (${item.quantity}) - $${itemTotal.toFixed(2)}`;
-                orderItemsContainer.appendChild(itemElement);
-            });
+    // Update cart count in header
+    function updateCartCount() {
+        const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
+        const cartCountEl = document.querySelector('.cart-count');
+        if (cartCountEl) cartCountEl.textContent = cartCount;
+    }
 
-            const totalElement = document.createElement('p');
-            totalElement.className = 'total';
-            totalElement.textContent = `Total: $${total.toFixed(2)}`;
-            orderItemsContainer.appendChild(totalElement);
-            updateCartCount();
-        }
+    // Initial render
+    renderOrderSummary();
 
-        // Update cart count in header
-        function updateCartCount() {
-            const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
-            document.querySelector('.cart-count').textContent = cartCount;
-        }
-
-        // Handle COD form submission
-        document.getElementById('codForm').addEventListener('submit', function (e) {
+    // Handle COD form submission
+    const codForm = document.getElementById('codForm');
+    if (codForm) {
+        codForm.addEventListener('submit', function (e) {
             e.preventDefault();
 
             if (cart.length === 0) {
@@ -461,30 +472,14 @@ header .search-bar::after {
             const address = document.getElementById('address').value.trim();
             const phone = document.getElementById('phone').value.trim();
 
-            // Basic validation
-            if (!name) {
-                alert('Please enter your full name.');
-                return;
-            }
-            if (!address) {
-                alert('Please enter your delivery address.');
-                return;
-            }
-            if (!/^\d{10}$/.test(phone.replace(/\D/g, ''))) {
-                alert('Please enter a valid 10-digit phone number.');
-                return;
-            }
+            if (!name) return alert('Please enter your full name.');
+            if (!address) return alert('Please enter your delivery address.');
+            if (!/^\d{10}$/.test(phone.replace(/\D/g, ''))) return alert('Please enter a valid 10-digit phone number.');
 
-            // Placeholder for order confirmation
             alert('Order confirmed successfully! You will pay upon delivery. (This is a demo.)');
 
-            // Save order to localStorage (for demo purposes)
             const orderId = Date.now().toString().slice(-6);
-            const orderDate = new Date().toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric'
-            });
+            const orderDate = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
             const orders = JSON.parse(localStorage.getItem(`orders_${loggedInUserEmail}`)) || [];
             orders.push({
                 id: orderId,
@@ -497,59 +492,58 @@ header .search-bar::after {
             });
             localStorage.setItem(`orders_${loggedInUserEmail}`, JSON.stringify(orders));
 
-            // Clear cart after order confirmation
+            // Clear cart after order
             cart = [];
             localStorage.setItem('cart', JSON.stringify(cart));
             window.location.href = 'orders.html';
         });
+    }
 
-        // Profile dropdown toggle for mobile
-        const profile = document.querySelector('.profile');
-        const dropdown = document.querySelector('.profile-dropdown');
+    // Profile dropdown toggle
+    const profile = document.querySelector('.profile');
+    const dropdown = document.querySelector('.profile-dropdown');
+    if (profile && dropdown) {
         profile.addEventListener('click', () => {
             dropdown.style.display = dropdown.style.display === 'flex' ? 'none' : 'flex';
         });
-
-        // Close dropdown when clicking outside
         document.addEventListener('click', (e) => {
-            if (!profile.contains(e.target)) {
-                dropdown.style.display = 'none';
-            }
+            if (!profile.contains(e.target)) dropdown.style.display = 'none';
         });
+    }
 
-        // Logout functionality
-        document.getElementById('logout').addEventListener('click', () => {
+    // Logout functionality
+    const logoutBtn = document.getElementById('logout');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => {
             sessionStorage.removeItem('loggedInUserEmail');
             alert('Logged out successfully!');
             window.location.href = 'login.html';
         });
+    }
 
-       // Basic search functionality (redirect or filter on homepage)
-        document.getElementById('searchInput').addEventListener('input', function (e) {
+    // Search functionality
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        searchInput.addEventListener('input', function (e) {
             const searchTerm = e.target.value.trim();
-            if (searchTerm) {
-                window.location.href = `products.html?search=${encodeURIComponent(searchTerm)}`;
-            }
+            if (searchTerm) window.location.href = `products.html?search=${encodeURIComponent(searchTerm)}`;
         });
-            
-document.addEventListener("DOMContentLoaded", function () {
+    }
+
+    // Filter products if search param exists
     const urlParams = new URLSearchParams(window.location.search);
     const searchTerm = urlParams.get("search");
-
-    if (searchTerm) {
-        document.getElementById("searchInput").value = searchTerm; // keep term in box
+    if (searchTerm && searchInput) {
+        searchInput.value = searchTerm;
         const productCards = document.querySelectorAll('.product-card');
-
         productCards.forEach(card => {
             const name = card.querySelector('h3').textContent.toLowerCase();
             const description = card.querySelector('p').textContent.toLowerCase();
-            card.style.display = 
-                name.includes(searchTerm.toLowerCase()) || 
-                description.includes(searchTerm.toLowerCase()) 
-                ? "block" : "none";
+            card.style.display = name.includes(searchTerm.toLowerCase()) || description.includes(searchTerm.toLowerCase()) ? 'block' : 'none';
         });
     }
 });
-    </script>
+</script>
 </body>
+
 </html>
