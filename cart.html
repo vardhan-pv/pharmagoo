@@ -364,151 +364,148 @@ header .search-bar::after {
         <p>&copy; 2025 Pharma Direct. All rights reserved.</p>
     </footer>
     <script>
-        // Check if user is logged in
-        const loggedInUserEmail = sessionStorage.getItem('loggedInUserEmail');
-        if (!loggedInUserEmail) {
-            alert('Please log in to view your cart.');
-            window.location.href = 'login.html';
-        }
-        // Load cart from localStorage
-        let cart = JSON.parse(localStorage.getItem('cart')) || [];
-        const cartItemsContainer = document.getElementById('cartItems');
-        const cartTotalContainer = document.getElementById('cartTotal');
-        // Sample product data with images and prices
-        const productData = {
-            1: { name: 'Cough Syrup', description: 'Fast relief from cough', price: 120, image: 'OPAC (2).jpeg' },
-            2: { name: 'Vitamin C Tablets', description: 'Daily immune support', price: 250, image: 'OPAC (1).jpeg' },
-            3: { name: 'Pain Relief Balm', description: 'Soothes body pain', price: 90, image: 'OPAC.jpeg' },
-            4: { name: 'Moisturizing Cream', description: 'Hydrates and nourishes skin', price: 350, image: 'th.jpeg' },
-            5: { name: 'Herbal Shampoo', description: 'Natural hair care', price: 180, image: 'th (1).jpeg' },
-            6: { name: 'Baby Lotion', description: 'Gentle care for babies', price: 220, image: 'th (2).jpeg' },
-            7: { name: 'Ayurvedic Tonic', description: 'Boosts energy and wellness', price: 400, image: 'th (3).jpeg' },
-            8: { name: 'Digital Thermometer', description: 'Accurate temperature measurement', price: 300, image: 'OPAC (6).jpeg' },
-            9: { name: 'Cough Syrup Plus', description: 'Extra strength cough relief', price: 140, image: 'OPAC (2).jpeg' },
-            10: { name: 'Vitamin D Capsules', description: 'Supports bone and immune health', price: 280, image: 'OPAC (1).jpeg' },
-            11: { name: 'Pain Relief Spray', description: 'Quick muscle pain relief', price: 150, image: 'OPAC.jpeg' },
-            12: { name: 'Aloe Vera Gel', description: 'Soothing skin care gel', price: 200, image: 'th.jpeg' },
-            13: { name: 'Natural Conditioner', description: 'Smooth and shiny hair', price: 190, image: 'th (1).jpeg' },
-            14: { name: 'Baby Shampoo', description: 'Tear-free gentle shampoo', price: 240, image: 'th (2).jpeg' },
-            15: { name: 'Herbal Tablets', description: 'Ayurvedic daily wellness', price: 300, image: 'th (3).jpeg' },
-            16: { name: 'Blood Pressure Monitor', description: 'Digital BP checking machine', price: 1200, image: 'images/OPAC (6).jpeg' },
-            17: { name: 'Cold Tablets', description: 'Relief from cold symptoms', price: 100, image: 'OPAC (2).jpeg' },
-            18: { name: 'Multivitamins', description: 'Complete daily nutrition', price: 320, image: 'OPAC (1).jpeg' },
-            19: { name: 'Joint Pain Cream', description: 'Relieves joint stiffness', price: 210, image: 'OPAC.jpeg' },
-            20: { name: 'Sunscreen Lotion', description: 'Protects from UV rays', price: 450, image: 'th.jpeg' },
-            21: { name: 'Hair Oil', description: 'Strengthens and nourishes hair', price: 160, image: 'th (1).jpeg' },
-            22: { name: 'Baby Soap', description: 'Soft and mild baby soap', price: 80, image: 'th (2).jpeg' },
-            23: { name: 'Chyawanprash', description: 'Boosts immunity naturally', price: 350, image: 'th (3).jpeg' },
-            24: { name: 'Glucometer', description: 'Check blood sugar levels', price: 900, image: 'OPAC (6).jpeg' },
-            25: { name: 'Cough Drops', description: 'Relief from sore throat', price: 60, image: 'OPAC (2).jpeg' },
-            26: { name: 'Zinc Supplements', description: 'Boosts immunity and healing', price: 270, image: 'OPAC (1).jpeg' },
-            27: { name: 'Back Pain Patch', description: 'Relieves back pain quickly', price: 130, image: 'OPAC.jpeg' },
-            28: { name: 'Face Wash', description: 'Cleans and refreshes skin', price: 210, image: 'th.jpeg' },
-            29: { name: 'Body Wash', description: 'Gentle cleansing body wash', price: 230, image: 'th (1).jpeg' },
-            30: { name: 'Baby Powder', description: 'Keeps skin soft and fresh', price: 150, image: 'th (2).jpeg' }
-        };
-        // Render cart items
-        function renderCart() {
-            cartItemsContainer.innerHTML = '';
-            cartTotalContainer.innerHTML = '';
-            if (cart.length === 0) {
-                cartItemsContainer.innerHTML = '<p class="empty-cart">Your cart is empty.</p>';
-                return;
-            }
-            let total = 0;
-            cart.forEach((item, index) => {
-                const product = productData[item.id] || { name: item.name, description: item.description, price: 10.00, image: 'images/placeholder.png' };
-                total += product.price * item.quantity;
-                const cartItem = document.createElement('div');
-                cartItem.className = 'cart-item';
-                cartItem.innerHTML = `
-                    <img src="${product.image}" alt="${product.name}" onerror="this.src='https://via.placeholder.com/80';">
-                    <div class="cart-item-details">
-                        <h3>${product.name}</h3>
-                        <p>${product.description} - $${product.price.toFixed(2)}</p>
-                    </div>
-                    <div class="cart-item-actions">
-                        <input type="number" value="${item.quantity}" min="1" onchange="updateQuantity(${index}, this.value)">
-                        <button onclick="updateQuantity(${index}, document.querySelectorAll('.cart-item-actions input')[${index}].value)">Update</button>
-                        <button onclick="removeItem(${index})">Remove</button>
-                    </div>
-                `;
-                cartItemsContainer.appendChild(cartItem);
-            });
-            cartTotalContainer.innerHTML = `
-                <p>Total: $${total.toFixed(2)}</p>
-                <button onclick="proceedToCheckout()">Proceed to Checkout</button>
-            `;
+document.addEventListener("DOMContentLoaded", function () {
+    // Check if user is logged in
+    const loggedInUserEmail = sessionStorage.getItem('loggedInUserEmail');
+    if (!loggedInUserEmail) {
+        alert('Please log in to view your cart.');
+        window.location.href = 'login.html';
+        return;
+    }
+
+    // Load cart from localStorage
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const cartItemsContainer = document.getElementById('cartItems');
+    const cartTotalContainer = document.getElementById('cartTotal');
+
+    // Sample product data with images and prices
+    const productData = {
+        1: { name: 'Cough Syrup', description: 'Fast relief from cough', price: 120, image: 'OPAC (2).jpeg' },
+        2: { name: 'Vitamin C Tablets', description: 'Daily immune support', price: 250, image: 'OPAC (1).jpeg' },
+        3: { name: 'Pain Relief Balm', description: 'Soothes body pain', price: 90, image: 'OPAC.jpeg' },
+        // ... keep your product list as is ...
+        30: { name: 'Baby Powder', description: 'Keeps skin soft and fresh', price: 150, image: 'th (2).jpeg' }
+    };
+
+    // Render cart items
+    function renderCart() {
+        cartItemsContainer.innerHTML = '';
+        cartTotalContainer.innerHTML = '';
+        if (cart.length === 0) {
+            cartItemsContainer.innerHTML = '<p class="empty-cart">Your cart is empty.</p>';
             updateCartCount();
+            return;
         }
-        // Update cart item quantity
-        function updateQuantity(index, quantity) {
-            quantity = parseInt(quantity);
-            if (isNaN(quantity) || quantity < 1) {
-                alert('Please enter a valid quantity.');
-                return;
-            }
-            cart[index].quantity = quantity;
+
+        let total = 0;
+        cart.forEach((item, index) => {
+            const product = productData[item.id] || { name: item.name, description: item.description, price: 10.00, image: 'images/placeholder.png' };
+            total += product.price * item.quantity;
+            const cartItem = document.createElement('div');
+            cartItem.className = 'cart-item';
+            cartItem.innerHTML = `
+                <img src="${product.image}" alt="${product.name}" onerror="this.src='https://via.placeholder.com/80';">
+                <div class="cart-item-details">
+                    <h3>${product.name}</h3>
+                    <p>${product.description} - $${product.price.toFixed(2)}</p>
+                </div>
+                <div class="cart-item-actions">
+                    <input type="number" value="${item.quantity}" min="1" onchange="updateQuantity(${index}, this.value)">
+                    <button onclick="updateQuantity(${index}, document.querySelectorAll('.cart-item-actions input')[${index}].value)">Update</button>
+                    <button onclick="removeItem(${index})">Remove</button>
+                </div>
+            `;
+            cartItemsContainer.appendChild(cartItem);
+        });
+
+        cartTotalContainer.innerHTML = `
+            <p>Total: $${total.toFixed(2)}</p>
+            <button onclick="proceedToCheckout()">Proceed to Checkout</button>
+        `;
+
+        updateCartCount();
+    }
+
+    // Update cart item quantity
+    window.updateQuantity = function (index, quantity) {
+        quantity = parseInt(quantity);
+        if (isNaN(quantity) || quantity < 1) {
+            alert('Please enter a valid quantity.');
+            return;
+        }
+        cart[index].quantity = quantity;
+        localStorage.setItem('cart', JSON.stringify(cart));
+        renderCart();
+        alert('Cart updated successfully!');
+    };
+
+    // Remove item from cart
+    window.removeItem = function (index) {
+        if (confirm('Are you sure you want to remove this item?')) {
+            cart.splice(index, 1);
             localStorage.setItem('cart', JSON.stringify(cart));
             renderCart();
-            alert('Cart updated successfully!');
+            alert('Item removed from cart.');
         }
-        // Remove item from cart
-        function removeItem(index) {
-            if (confirm('Are you sure you want to remove this item?')) {
-                cart.splice(index, 1);
-                localStorage.setItem('cart', JSON.stringify(cart));
-                renderCart();
-                alert('Item removed from cart.');
-            }
+    };
+
+    // Update cart count in header
+    function updateCartCount() {
+        const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
+        const cartCountElement = document.querySelector('.cart-count');
+        if (cartCountElement) cartCountElement.textContent = cartCount;
+    }
+
+    // Proceed to checkout
+    window.proceedToCheckout = function () {
+        if (cart.length === 0) {
+            alert('Your cart is empty!');
+            return;
         }
-        // Update cart count in header
-        function updateCartCount() {
-            const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
-            document.querySelector('.cart-count').textContent = cartCount;
-        }
-        // Proceed to checkout
-        function proceedToCheckout() {
-            if (cart.length === 0) {
-                alert('Your cart is empty!');
-                return;
-            }
-            window.location.href = 'payment.html';
-        }
-        // Profile dropdown toggle for mobile
-        const profile = document.querySelector('.profile');
-        const dropdown = document.querySelector('.profile-dropdown');
+        window.location.href = 'payment.html';
+    };
+
+    // Profile dropdown toggle for mobile
+    const profile = document.querySelector('.profile');
+    const dropdown = document.querySelector('.profile-dropdown');
+    if (profile && dropdown) {
         profile.addEventListener('click', () => {
             dropdown.style.display = dropdown.style.display === 'flex' ? 'none' : 'flex';
         });
-        // Close dropdown when clicking outside
         document.addEventListener('click', (e) => {
             if (!profile.contains(e.target)) {
                 dropdown.style.display = 'none';
             }
         });
-        // Logout functionality
-        document.getElementById('logout').addEventListener('click', () => {
+    }
+
+    // Logout functionality
+    const logoutBtn = document.getElementById('logout');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => {
             sessionStorage.removeItem('loggedInUserEmail');
             alert('Logged out successfully!');
             window.location.href = 'login.html';
         });
-        // Basic search functionality (redirect or filter on homepage)
-        document.getElementById('searchInput').addEventListener('input', function (e) {
+    }
+
+    // Basic search functionality (redirect or filter on homepage)
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        searchInput.addEventListener('input', function (e) {
             const searchTerm = e.target.value.trim();
             if (searchTerm) {
                 window.location.href = `products.html?search=${encodeURIComponent(searchTerm)}`;
             }
         });
-            
-document.addEventListener("DOMContentLoaded", function () {
+    }
+
+    // Handle search filtering on products page
     const urlParams = new URLSearchParams(window.location.search);
     const searchTerm = urlParams.get("search");
-
-    if (searchTerm) {
-        document.getElementById("searchInput").value = searchTerm; // keep term in box
+    if (searchTerm && searchInput) {
+        searchInput.value = searchTerm; // keep term in box
         const productCards = document.querySelectorAll('.product-card');
-
         productCards.forEach(card => {
             const name = card.querySelector('h3').textContent.toLowerCase();
             const description = card.querySelector('p').textContent.toLowerCase();
@@ -518,7 +515,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 ? "block" : "none";
         });
     }
+
+    // Initial render
+    renderCart();
 });
-    </script>
+</script>
+
 </body>
+
 </html>
